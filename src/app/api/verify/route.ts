@@ -7,7 +7,10 @@ export async function POST(req: Request) {
     const body = await req.json();
     token = body.token;
   } catch {
-    return Response.json({ success: false, message: "Invalid request" }, { status: 400 });
+    token = req.headers.get("cf-turnstile-response") || undefined;
+    if (!token) {
+      return Response.json({ success: false, message: "Invalid request" }, { status: 400 });
+    }
   }
 
   const cfIp = req.headers.get("cf-connecting-ip")?.trim();
@@ -45,14 +48,6 @@ export async function POST(req: Request) {
     // Generate our signed session cookie
     const sessionToken = await generateToken(ip);
 
-    // Compute cookie domain (apex)
-    const host = req.headers.get("host")?.split(":")[0] || undefined;
-    let domain: string | undefined = undefined;
-    if (host && host !== "localhost" && host.indexOf(".") !== -1) {
-      const parts = host.split(".");
-      domain = `.${parts.slice(-2).join(".")}`;
-    }
-
     const res = NextResponse.json({ success: true });
     res.cookies.set("human_token", sessionToken, {
       httpOnly: true,
@@ -60,7 +55,6 @@ export async function POST(req: Request) {
       sameSite: "lax",
       maxAge: 3600, // 1 hour
       path: "/",
-      domain,
     });
 
     return res;
