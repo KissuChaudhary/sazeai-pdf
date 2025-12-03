@@ -1,5 +1,5 @@
 import { fal } from "@/lib/ai";
-import { normalizeIp } from "@/lib/auth";
+import { normalizeIp, verifyToken } from "@/lib/auth";
 import { dailyRateLimiter, burstRateLimiter } from "@/lib/redis";
 import dedent from "dedent";
 import { z } from "zod";
@@ -67,7 +67,19 @@ export async function POST(req: Request) {
     }
   }
 
-  // Bot check removed per request
+  const cookieHeader = req.headers.get("cookie") || "";
+  const humanCookie = cookieHeader
+    .split(";")
+    .map((s) => s.trim())
+    .find((s) => s.startsWith("human_token="));
+  const humanToken = humanCookie?.split("=")[1];
+  const isHuman = await verifyToken(humanToken);
+  if (!isHuman) {
+    return Response.json(
+      { error: "Bot check required. Please complete verification." },
+      { status: 403 }
+    );
+  }
 
   let body;
   try {

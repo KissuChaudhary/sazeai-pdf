@@ -12,7 +12,6 @@ export async function POST(req: Request) {
       return Response.json({ success: false, message: "Invalid request" }, { status: 400 });
     }
   }
-
   const cfIp = req.headers.get("cf-connecting-ip")?.trim();
   const xf = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
   const realIp = req.headers.get("x-real-ip")?.trim();

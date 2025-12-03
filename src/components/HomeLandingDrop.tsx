@@ -14,6 +14,8 @@ import HomepageImage1 from "./images/homepage-image-1";
 import HomepageImage2 from "./images/homepage-image-2";
 import { StatusApp } from "@/app/page";
 import { useToast } from "@/hooks/use-toast";
+import { Turnstile } from "@marsidev/react-turnstile";
+import { useState } from "react";
 
 export const HomeLandingDrop = ({
   status,
@@ -27,6 +29,8 @@ export const HomeLandingDrop = ({
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }) => {
   const { toast } = useToast();
+  const [verified, setVerified] = useState(false);
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
   return (
     <div className="mx-auto max-w-lg">
       <h1 className="text-center text-4xl font-bold md:text-5xl max-w-4xl px-4">
@@ -112,6 +116,43 @@ export const HomeLandingDrop = ({
                 ))}
               </SelectContent>
             </Select>
+            {siteKey && (
+              <div className="mt-6">
+                <Turnstile
+                  siteKey={siteKey}
+                  options={{ theme: "light" }}
+                  onSuccess={async (token) => {
+                    try {
+                      const res = await fetch("/api/verify", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ token }),
+                      });
+                      const data = await res.json();
+                      if (data.success) {
+                        setVerified(true);
+                      } else {
+                        setVerified(false);
+                        toast({
+                          variant: "destructive",
+                          title: "Bot check failed",
+                          description: "Please retry the verification.",
+                        });
+                      }
+                    } catch {
+                      setVerified(false);
+                      toast({
+                        variant: "destructive",
+                        title: "Verification error",
+                        description: "Could not verify. Please try again.",
+                      });
+                    }
+                  }}
+                  onExpire={() => setVerified(false)}
+                  onError={() => setVerified(false)}
+                />
+              </div>
+            )}
             
             <div className="mt-6">
               <ins
@@ -128,7 +169,7 @@ export const HomeLandingDrop = ({
               type="submit"
               variant="secondary"
               className="w-full border bg-white/80 text-base font-semibold hover:bg-white"
-              disabled={status === "parsing"}
+              disabled={status === "parsing" || !verified}
             >
               <SparklesIcon />
               Generate
