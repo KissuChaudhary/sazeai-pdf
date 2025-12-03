@@ -105,7 +105,10 @@ export async function summarizeStream(chunks: Chunk[], language: string) {
 }
 
 export async function generateQuickSummary(chunks: Chunk[], language: string) {
-  const allSummaries = chunks.map((chunk) => chunk.summary).join("\n\n");
+  const allSummaries = chunks
+    .map((chunk) => chunk.summary)
+    .filter((s): s is string => typeof s === "string" && s.length > 0)
+    .join("\n\n");
 
   const response = await fetch("/api/summarize", {
     method: "POST",
@@ -115,29 +118,28 @@ export async function generateQuickSummary(chunks: Chunk[], language: string) {
     body: JSON.stringify({ text: allSummaries, language }),
   });
 
+  if (!response.ok) {
+    return {
+      title: "Error generating summary",
+      summary: "<p>Request failed. Please complete bot check and try again.</p>",
+    };
+  }
+
   const { title, summary } = await response.json();
+
+  // The server might return an error if rate limited or bot blocked
+  if (!title || !summary) {
+    console.error("Failed to generate summary:", title, summary);
+    // Return a fallback to avoid crashing
+    return {
+      title: "Error generating summary",
+      summary: "<p>Could not generate summary. Please try again.</p>",
+    };
+  }
 
   console.log("title", title);
   assert.ok(typeof title === "string");
   assert.ok(typeof summary === "string");
 
   return { title, summary };
-}
-
-export type ImageGenerationResponse = {
-  url: string;
-};
-
-export async function generateImage(summary: string) {
-  const response = await fetch("/api/image", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ text: summary }),
-  });
-
-  const data: ImageGenerationResponse = await response.json();
-
-  return data.url;
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { Turnstile } from "@marsidev/react-turnstile";
 import { SparklesIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import {
@@ -28,19 +29,17 @@ export const HomeLandingDrop = ({
 }) => {
   const { toast } = useToast();
   return (
-    <div className="mx-auto mt-6 max-w-lg md:mt-10">
+    <div className="mx-auto max-w-lg">
       <h1 className="text-center text-4xl font-bold md:text-5xl">
-        Summarize PDFs
-        <br /> in seconds
+        Free AI PDF Summarizer
       </h1>
       <p className="mx-auto mt-6 max-w-md text-balance text-center leading-snug md:text-lg md:leading-snug">
-        Upload a <strong>PDF</strong> to get a quick, clear, and shareable
-        summary.
+        Upload a <strong>PDF</strong> to get a quick and clear summary.
       </p>
 
       <form
         onSubmit={handleSubmit}
-        className="relative mx-auto mt-20 max-w-md px-4 md:mt-16"
+        className="relative mx-auto mt-8 max-w-md px-4 md:mt-8"
       >
         <div className="pointer-events-none absolute left-[-40px] top-[-185px] flex w-[200px] items-center md:-left-[calc(min(30vw,350px))] md:-top-20 md:w-[390px]">
           <HomepageImage1 />
@@ -74,7 +73,7 @@ export const HomeLandingDrop = ({
             >
               {({ getRootProps, getInputProps, isDragAccept }) => (
                 <div
-                  className={`mt-2 flex aspect-video cursor-pointer items-center justify-center rounded-lg border border-dashed bg-gray-100 ${isDragAccept ? "border-blue-500" : "border-gray-250"}`}
+                  className={`mt-2 flex h-32 cursor-pointer items-center justify-center rounded-lg border border-dashed bg-gray-100 ${isDragAccept ? "border-blue-500" : "border-gray-250"}`}
                   {...getRootProps()}
                 >
                   <input required={!file} {...getInputProps()} />
@@ -83,7 +82,7 @@ export const HomeLandingDrop = ({
                       <p>{file.name}</p>
                     ) : (
                       <Button type="button" className="md:text-base">
-                        Select PDF
+                        Choose PDF
                       </Button>
                     )}
                   </div>
@@ -114,18 +113,34 @@ export const HomeLandingDrop = ({
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <div className="mt-8 text-center">
+            <div className="mt-6 flex justify-center">
+              <Turnstile
+                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+              />
+            </div>
+            <div className="mt-6">
+              <ins
+                className="adsbygoogle"
+                style={{ display: "block" }}
+                data-ad-client="ca-pub-7915372771416695"
+                data-ad-slot="8441706260"
+                data-ad-format="auto"
+                data-full-width-responsive="true"
+              />
+            </div>
+             <div className=" text-center">
             <Button
               type="submit"
               variant="secondary"
-              className="w-60 border bg-white/80 text-base font-semibold hover:bg-white md:w-auto"
+              className="w-full border bg-white/80 text-base font-semibold hover:bg-white"
               disabled={status === "parsing"}
             >
               <SparklesIcon />
               Generate
             </Button>
           </div>
+          </div>
+         
         </div>
       </form>
     </div>

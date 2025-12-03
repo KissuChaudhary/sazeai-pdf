@@ -1,4 +1,3 @@
-import GithubIcon from "@/components/icons/github";
 import XIcon from "@/components/icons/x";
 import Logo from "@/components/ui/logo";
 import type { Metadata } from "next";
@@ -15,11 +14,47 @@ const font = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Smart PDFs | Summarize PDFs in seconds",
+  title: {
+    default: "Saze AI - Free PDF Summarizer | Summarize Long PDFs in Seconds, No Sign-Up",
+    template: "%s | Saze AI",
+  },
   description:
-    "Upload a PDF to get a quick, clear, and shareable summary with AI for free!",
+        "Summarize PDFs in seconds with Saze AI. Upload a PDF to get a quick, clear, and shareable summary.",
+  applicationName: "Saze AI PDF Summarizer",
+  keywords: [
+    "AI PDF summarizer",
+    "PDF summary generator",
+    "summarize PDF online",
+    "free PDF summarizer",
+    "research paper summarizer",
+    "academic PDF summary",
+    "legal PDF summarizer",
+    "multilingual PDF summarizer",
+    "Hindi PDF summarizer",
+    "fast PDF summary",
+    "no signup PDF summarizer",
+    "Saze AI",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
-    images: "https://smartpdfs.vercel.app/og.jpg",
+    type: "website",
+    url: "https://sazeai.com/",
+    title: "Saze AI PDF Summarizer",
+    description: "AI PDF summarizer that creates clear, shareable summaries in seconds.",
+    images: "https://sazeai.com/og.jpg",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@AINotSoSmart",
+    title: "Saze AI PDF Summarizer",
+    description: "AI PDF summarizer that creates clear, shareable summaries in seconds.",
+    images: ["https://sazeai.com/og.jpg"],
+  },
+  alternates: {
+    canonical: "/",
   },
 };
 
@@ -31,7 +66,31 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <head>
-        <PlausibleProvider domain="smartpdfs.ai" />
+        <PlausibleProvider domain="sazeai.com" />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7915372771416695"
+          crossOrigin="anonymous"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "@id": "https://sazeai.com/#website",
+              url: "https://sazeai.com/",
+              name: "Saze AI PDF Summarizer",
+              description: "AI PDF summarizer that creates clear, shareable summaries in seconds.",
+              inLanguage: "en",
+              publisher: {
+                "@type": "Organization",
+                name: "Saze AI",
+                url: "https://sazeai.com/",
+              },
+            }),
+          }}
+        />
       </head>
       <body
         className={`${font.variable} flex min-h-full flex-col bg-gray-100 font-[family-name:var(--font-plus-jakarta-sans)] text-gray-900 antialiased`}
@@ -46,29 +105,21 @@ export default function RootLayout({
         <Toaster />
         <footer className="mx-auto mt-14 flex w-full max-w-7xl items-center justify-between px-4 py-6 md:mt-0">
           <p className="text-xs text-gray-300 md:text-sm">
-            Powered by Llama 3.3 on{" "}
+            Powered by { } 
             <a
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 underline transition hover:text-gray-900"
-              href="https://togetherai.link/"
+              href="https://founderswall.com"
             >
-              Together AI
+              @ 2025 Saze AI | All rights reserved.
             </a>
           </p>
 
           <div className="flex items-center gap-2 md:gap-3">
+            
             <a
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 rounded-lg border border-gray-250 bg-white px-2 py-1.5 text-xs text-gray-300 shadow transition hover:bg-white/75 md:rounded-xl md:px-4 md:text-sm"
-              href="https://github.com/nutlope/smartpdfs"
-            >
-              <GithubIcon className="size-4" />
-              GitHub
-            </a>
-            <a
-              href="https://x.com/nutlope"
+              href="https://x.com/AINotSoSmart"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 rounded-lg border border-gray-250 bg-white px-2 py-1.5 text-xs text-gray-300 shadow transition hover:bg-white/75 md:rounded-xl md:px-4 md:text-sm"

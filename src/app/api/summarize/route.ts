@@ -1,14 +1,101 @@
-import { togetheraiClient } from "@/lib/ai";
-import assert from "assert";
+import { fal } from "@/lib/ai";
+import { verifyToken, normalizeIp } from "@/lib/auth";
+import { dailyRateLimiter, burstRateLimiter } from "@/lib/redis";
 import dedent from "dedent";
+import { cookies } from "next/headers";
 import { z } from "zod";
-import { generateObject } from "ai";
+
+const InputSchema = z.object({
+  text: z.string().min(1).max(100000), // Max 100k characters
+  language: z.string().min(1).max(50),
+});
 
 export async function POST(req: Request) {
-  const { text, language } = await req.json();
+  // Robust IP detection
+  const forwardedFor = req.headers.get("x-forwarded-for");
+  const realIp = req.headers.get("x-real-ip");
 
-  assert.ok(typeof text === "string");
-  assert.ok(typeof language === "string");
+  // 1. Try x-forwarded-for (standard for proxies/load balancers)
+  // It can be a comma-separated list: "client, proxy1, proxy2" -> take the first one
+  let ip = forwardedFor?.split(",")[0]?.trim();
+
+  // 2. Fallback to x-real-ip (sometimes used by Nginx/proxies)
+  if (!ip && realIp) {
+    ip = realIp.trim();
+  }
+
+  // 3. Final fallback to localhost
+  if (!ip) {
+    ip = "127.0.0.1";
+  }
+
+  ip = normalizeIp(ip);
+
+  if (dailyRateLimiter || burstRateLimiter) {
+    if (burstRateLimiter) {
+      const b = await burstRateLimiter.limit(ip);
+      if (!b.success) {
+        return Response.json(
+          { error: "Too many requests. Please slow down and try again." },
+          {
+            status: 429,
+            headers: {
+              "X-RateLimit-Limit-PerMin": b.limit.toString(),
+              "X-RateLimit-Remaining-PerMin": b.remaining.toString(),
+              "X-RateLimit-Reset-PerMin": b.reset.toString(),
+            },
+          }
+        );
+      }
+    }
+
+    if (dailyRateLimiter) {
+      const d = await dailyRateLimiter.limit(ip);
+      if (!d.success) {
+        return Response.json(
+          { error: "Daily rate limit exceeded. Please try again tomorrow." },
+          {
+            status: 429,
+            headers: {
+              "X-RateLimit-Limit": d.limit.toString(),
+              "X-RateLimit-Remaining": d.remaining.toString(),
+              "X-RateLimit-Reset": d.reset.toString(),
+            },
+          }
+        );
+      }
+    }
+  }
+
+  // Bot Check Logic
+  if (process.env.NODE_ENV === "production") {
+    const cookieStore = await cookies();
+    const humanToken = cookieStore.get("human_token")?.value;
+    if (!(await verifyToken(humanToken, ip))) {
+      return Response.json(
+        { error: "Bot check failed or expired. Please refresh the page." },
+        { status: 403 }
+      );
+    }
+  }
+
+  let body;
+  try {
+    body = await req.json();
+  } catch {
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const parseResult = InputSchema.safeParse(body);
+
+  if (!parseResult.success) {
+    return Response.json(
+      { error: "Invalid input: " + parseResult.error.message },
+      { status: 400 }
+    );
+  }
+
+  const { text, language } = parseResult.data;
 
   const systemPrompt = dedent`
     You are an expert at summarizing text.
@@ -28,48 +115,94 @@ export async function POST(req: Request) {
     The summary should be well-structured and easy to scan, while maintaining accuracy and completeness.
     Please analyze the text thoroughly before starting the summary.
 
-    IMPORTANT: Output ONLY valid HTML without any markdown or plain text line breaks.
+    IMPORTANT: Output ONLY a valid JSON object with the following structure, and nothing else. Do not include markdown formatting like \`\`\`json.
+    {
+      "title": "The title of the summary",
+      "summary": "The HTML content of the summary"
+    }
   `;
 
-  const summarySchema = z.object({
-    title: z.string().describe("A title for the summary"),
-    summary: z
-      .string()
-      .describe(
-        "The actual summary of the text containing new lines breaks between paragraphs or phrases for better readability.",
-      ),
-  });
-
-  const summaryResponse = await generateObject({
-    model: togetheraiClient("meta-llama/Llama-3.3-70B-Instruct-Turbo"),
-    schema: summarySchema,
-    maxRetries: 2,
-    messages: [
-      {
-        role: "system",
-        content: systemPrompt,
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result: any = await fal.subscribe("openrouter/router", {
+      input: {
+        prompt: text,
+        model: "openai/gpt-oss-20b",
+        system_prompt: systemPrompt,
+        temperature: 1,
+        reasoning: true,
       },
-      {
-        role: "user",
-        content: text,
+      logs: true,
+      onQueueUpdate: (update) => {
+        if (update.status === "IN_PROGRESS") {
+          update.logs.map((log) => log.message).forEach(console.log);
+        }
       },
-    ],
-    mode: "json",
-    // maxTokens: 800,
-  });
+    });
 
-  const rayId = summaryResponse.response?.headers?.["cf-ray"];
-  console.log("Ray ID:", rayId);
+    console.log("Fal result:", result);
 
-  const content = summaryResponse.object;
-  console.log(summaryResponse.usage);
+    let jsonString = "";
+    const output = result.data;
 
-  if (!content) {
-    console.log("Content was blank");
-    return;
+    if (typeof output === "string") {
+      jsonString = output;
+    } else if (output && typeof output === "object") {
+      // Try to find the text content in likely places
+      if (output.completion) {
+        jsonString = output.completion;
+      } else if (output.output) {
+        // Fal AI sometimes returns { output: "..." }
+        jsonString = output.output;
+      } else if (output.text) {
+        jsonString = output.text;
+      } else if (output.choices && output.choices[0]?.message?.content) {
+        jsonString = output.choices[0].message.content;
+      } else {
+        // Fallback: assume the object itself might be the result (unlikely for this endpoint but possible)
+        jsonString = JSON.stringify(output);
+      }
+    }
+
+    // Clean up markdown code blocks if present
+    jsonString = jsonString.replace(/^```json\s*/, "").replace(/\s*```$/, "");
+    // Remove any trailing newlines or whitespace
+    jsonString = jsonString.trim();
+
+    let content;
+    try {
+      content = JSON.parse(jsonString);
+    } catch (error) {
+      console.error("Failed to parse JSON:", error);
+      console.log("Raw output:", jsonString);
+      // Attempt to recover if it's just a string (maybe the model failed to JSONify)
+      return Response.json(
+        { error: "Failed to generate valid JSON summary" },
+        { status: 500 }
+      );
+    }
+
+    // Validate with Zod
+    const summarySchema = z.object({
+      title: z.string(),
+      summary: z.string(),
+    });
+
+    const parsedContent = summarySchema.safeParse(content);
+
+    if (!parsedContent.success) {
+      console.error("Schema validation failed:", parsedContent.error);
+      return Response.json(
+        { error: "Generated content does not match schema" },
+        { status: 500 }
+      );
+    }
+
+    return Response.json(parsedContent.data);
+  } catch (error) {
+    console.error("Fal AI error:", error);
+    return Response.json({ error: "Failed to generate summary" }, { status: 500 });
   }
-
-  return Response.json(content);
 }
 
 export const runtime = "edge";

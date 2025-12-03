@@ -1,77 +1,134 @@
-export default function Logo(props: React.ComponentProps<"svg">) {
+import React from "react";
+
+export default function SazeAILogo(props: React.ComponentProps<"svg">) {
   return (
     <svg
-      width={165}
-      height={30}
-      viewBox="0 0 165 30"
+      width={190}
+      height={50} // Reduced overall height
+      viewBox="0 0 190 50"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+      xmlns=""
       {...props}
     >
-      <g filter="url(#filter0_f_136_195792)">
-        <path
-          d="M5.583 6.471c2.363 2.62 8.823 1.765 12.907.892 1.848-.395 3.711.853 3.875 2.736.514 5.932 1.273 16.838-.34 14.604-1.538-2.133-9.02-1.271-13.342-.568-1.694.275-3.324-.847-3.56-2.547-.831-5.96-2.255-18.127.46-15.117z"
-          fill="#B7B7B7"
-        />
-      </g>
-      <path
-        d="M5.583 5.471c2.908 3.224 12.02 1.186 15.274.327.609-.16 1.227.247 1.287.874.425 4.452 1.756 19.63-.118 17.03-1.834-2.541-12.107-.83-15.416-.203a1.002 1.002 0 01-1.186-.829c-.652-4.329-2.937-20.632.16-17.199z"
-        fill="url(#paint0_linear_136_195792)"
-      />
-      <path
-        d="M18.245 14.756S12.985 10.208 14 14.5c1.015 4.291-4.244-.257-4.244-.257"
-        stroke="#E1E1E1"
-        strokeWidth={1.5}
-        strokeLinecap="square"
-      />
-      <path
-        d="M31.04 18.046h2.34c.182 2.444 2.08 4.056 4.862 4.056 2.444 0 4.186-1.118 4.186-3.094 0-2.262-2.236-2.73-4.992-3.198-2.938-.494-5.954-1.456-5.954-4.992 0-3.094 2.522-5.174 6.214-5.174 4.056 0 6.552 2.262 6.76 5.538h-2.34c-.26-2.106-1.95-3.484-4.42-3.484-2.366 0-3.952 1.04-3.952 2.99 0 2.184 2.21 2.626 4.94 3.094 2.964.494 6.006 1.482 6.006 5.018 0 3.146-2.652 5.356-6.474 5.356-4.446 0-7.046-2.522-7.176-6.11zm31.003-7.462c2.756 0 5.018 1.586 5.018 5.772V24h-2.132v-7.514c0-2.6-1.144-3.952-3.146-3.952-2.21 0-3.562 1.664-3.562 4.368V24h-2.132v-7.514c0-2.6-1.17-3.952-3.198-3.952-2.184 0-3.51 1.82-3.51 4.472V24h-2.132V10.74h1.846l.286 1.82c.702-.962 1.82-1.976 3.874-1.976 1.846 0 3.432.832 4.186 2.522.806-1.43 2.236-2.522 4.602-2.522zM81.522 22.05h.676V24h-1.17c-1.768 0-2.366-.754-2.392-2.054-.832 1.196-2.158 2.21-4.446 2.21-2.912 0-4.888-1.456-4.888-3.874 0-2.652 1.846-4.134 5.33-4.134h3.9v-.91c0-1.716-1.222-2.756-3.302-2.756-1.872 0-3.12.884-3.38 2.236h-2.132c.312-2.6 2.418-4.134 5.616-4.134 3.38 0 5.33 1.69 5.33 4.784v5.798c0 .702.26.884.858.884zm-2.99-3.458v-.65h-4.108c-1.898 0-2.964.702-2.964 2.21 0 1.3 1.118 2.184 2.886 2.184 2.652 0 4.186-1.534 4.186-3.744zm11.44-7.852h.599v2.08h-1.066c-2.782 0-3.536 2.314-3.536 4.42V24h-2.132V10.74h1.846l.286 2.002c.624-1.014 1.638-2.002 4.004-2.002zm3.867 9.802V12.69h-2.392v-1.95h2.391V7.022h2.133v3.718h3.431v1.95h-3.431v7.826c0 1.118.39 1.534 1.533 1.534h2.106V24h-2.314c-2.547 0-3.458-1.118-3.458-3.458z"
-        fill="#3F3C3C"
-      />
-      <path
-        d="M104.364 24l3.224-18.2h6.682c3.9 0 6.188 2.34 6.188 5.356 0 4.342-3.172 6.734-7.566 6.734h-3.536L108.264 24h-3.9zm9.516-14.95h-2.99l-.962 5.59h3.016c2.132 0 3.562-1.118 3.562-3.172 0-1.586-.988-2.418-2.626-2.418zM127.195 24h-6.708l3.224-18.2h5.538c5.486 0 8.684 3.146 8.684 7.852 0 6.318-4.004 10.348-10.738 10.348zm-.182-14.95l-2.054 11.7h2.678c4.082 0 6.37-2.99 6.37-6.916 0-3.042-1.872-4.784-4.992-4.784h-2.002zM138.667 24l3.224-18.2h11.882l-.598 3.354h-7.982l-.754 4.264h6.526l-.572 3.198h-6.526l-1.3 7.384h-3.9zm19.69-13.546c3.224 0 5.746 1.482 5.746 4.368h-3.458c0-1.144-.858-1.768-2.314-1.768-1.56 0-2.496.546-2.496 1.404 0 .78.936 1.066 2.262 1.248 2.522.338 5.356.988 5.356 3.848 0 3.224-2.938 4.602-6.422 4.602-3.406 0-5.824-1.534-5.824-4.654h3.406c.052 1.404 1.118 2.028 2.522 2.028 1.69 0 2.704-.494 2.704-1.534 0-.832-.91-1.118-2.496-1.378-2.496-.416-5.07-1.04-5.07-3.718 0-2.86 2.496-4.446 6.084-4.446z"
-        fill="url(#paint1_linear_136_195792)"
-      />
+      {/* --- DEFINITIONS --- */}
       <defs>
+        {/* Dark Premium Background Gradient */}
+        <linearGradient
+          id="bg_gradient_sm"
+          x1="2"
+          y1="5"
+          x2="42"
+          y2="45"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0" stopColor="#333333" />
+          <stop offset="1" stopColor="#000000" />
+        </linearGradient>
+
+        {/* Metallic / Silver Gradient for the Icon */}
+        <linearGradient
+          id="icon_gradient_sm"
+          x1="10"
+          y1="10"
+          x2="35"
+          y2="40"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0" stopColor="#FFFFFF" />
+          <stop offset="1" stopColor="#999999" />
+        </linearGradient>
+
+        {/* Adjusted Drop Shadow */}
         <filter
-          id="filter0_f_136_195792"
-          x={0}
-          y={2}
-          width={27}
-          height={27}
+          id="shadow_filter_sm"
+          x="-2"
+          y="1"
+          width="52"
+          height="52"
           filterUnits="userSpaceOnUse"
           colorInterpolationFilters="sRGB"
         >
           <feFlood floodOpacity={0} result="BackgroundImageFix" />
-          <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-          <feGaussianBlur
-            stdDeviation={2}
-            result="effect1_foregroundBlur_136_195792"
+          <feColorMatrix
+            in="SourceAlpha"
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+            result="hardAlpha"
+          />
+          <feOffset dy={3} />
+          <feGaussianBlur stdDeviation={2} />
+          <feComposite in2="hardAlpha" operator="out" />
+          <feColorMatrix
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
+          />
+          <feBlend
+            mode="normal"
+            in2="BackgroundImageFix"
+            result="effect1_dropShadow"
+          />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="effect1_dropShadow"
+            result="shape"
           />
         </filter>
-        <linearGradient
-          id="paint0_linear_136_195792"
-          x1={13.8044}
-          y1={5.47122}
-          x2={13.8044}
-          y2={23.7029}
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#3F3C3C" />
-          <stop offset={1} />
-        </linearGradient>
-        <linearGradient
-          id="paint1_linear_136_195792"
-          x1={110.952}
-          y1={10.8909}
-          x2={170.317}
-          y2={28.5703}
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop />
-          <stop offset={1} stopColor="#3F3C3C" />
-        </linearGradient>
       </defs>
+
+      {/* --- THE ICON MARK (Scaled Down) --- */}
+      <g filter="url(#shadow_filter_sm)">
+        {/* 1. The Container (Squircle) - Size reduced to 40x40 */}
+        <rect
+          x="2"
+          y="5"
+          width="40"
+          height="40"
+          rx="10" // Slightly tighter corner radius
+          fill="url(#bg_gradient_sm)"
+        />
+
+        {/* 2. The "S" Symbol - Compact Version */}
+        <path
+          d="M28 15H20C17.7909 15 16 16.7909 16 19V20C16 21.6569 17.3431 23 19 23H25C27.2091 23 29 24.7909 29 27V28C29 30.2091 27.2091 32 25 32H16"
+          stroke="url(#icon_gradient_sm)"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {/* Accent Dot */}
+        <circle cx="16.5" cy="15" r="2" fill="#B0B0B0" />
+      </g>
+
+      {/* --- TEXT ELEMENTS --- */}
+      <g transform="translate(52, 9)">
+        {/* Main Title: Saze AI */}
+        <text
+          x="0"
+          y="18"
+          fontFamily="Arial, Helvetica, sans-serif"
+          fontWeight="bold"
+          fontSize="22" 
+          fill="#2C2C2C"
+          letterSpacing="-0.5"
+        >
+          Saze AI
+        </text>
+
+        {/* Subtitle: PDF Summarizer */}
+        <text
+          x="0" 
+          y="31" 
+          fontFamily="Arial, Helvetica, sans-serif"
+          fontWeight="600"
+          fontSize="8.5"
+          fill="#666666" 
+          letterSpacing="0.8"
+          style={{ textTransform: "uppercase" }}
+        >
+          PDF Summarizer
+        </text>
+      </g>
     </svg>
   );
 }
