@@ -126,6 +126,7 @@ export const HomeLandingDrop = ({
                       const res = await fetch("/api/verify", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
+                        credentials: "include",
                         body: JSON.stringify({ token }),
                       });
                       const data = await res.json();

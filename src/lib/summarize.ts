@@ -74,6 +74,7 @@ export async function summarizeStream(chunks: Chunk[], language: string) {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify({ text, language }),
         });
         let data;
@@ -115,6 +116,7 @@ export async function generateQuickSummary(chunks: Chunk[], language: string) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify({ text: allSummaries, language }),
   });
 
