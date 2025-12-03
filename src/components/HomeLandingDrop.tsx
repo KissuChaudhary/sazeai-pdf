@@ -30,7 +30,7 @@ export const HomeLandingDrop = ({
   const { toast } = useToast();
   return (
     <div className="mx-auto max-w-lg">
-      <h1 className="text-center text-4xl font-bold md:text-5xl">
+      <h1 className="text-center text-4xl font-bold md:text-5xl max-w-4xl px-4">
         Free AI PDF Summarizer
       </h1>
       <p className="mx-auto mt-6 max-w-md text-balance text-center leading-snug md:text-lg md:leading-snug">
@@ -39,7 +39,7 @@ export const HomeLandingDrop = ({
 
       <form
         onSubmit={handleSubmit}
-        className="relative mx-auto mt-8 max-w-md px-4 md:mt-8"
+        className="relative mx-auto mt-12 max-w-md px-4 md:mt-12"
       >
         <div className="pointer-events-none absolute left-[-40px] top-[-185px] flex w-[200px] items-center md:-left-[calc(min(30vw,350px))] md:-top-20 md:w-[390px]">
           <HomepageImage1 />
