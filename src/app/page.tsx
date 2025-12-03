@@ -46,36 +46,6 @@ export default function Home() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const language = formData.get("language");
-    const token = formData.get("cf-turnstile-response");
-
-    if (!token) {
-      toast({
-        variant: "destructive",
-        title: "Bot check failed",
-        description: "Please complete the captcha challenge.",
-      });
-      return;
-    }
-
-    // Verify bot token
-    try {
-      const verifyRes = await fetch("/api/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-
-      if (!verifyRes.ok) {
-        throw new Error("Verification failed");
-      }
-    } catch {
-      toast({
-        variant: "destructive",
-        title: "Bot check failed",
-        description: "Please refresh and try again.",
-      });
-      return;
-    }
 
     if (!file || typeof language !== "string") return;
 

@@ -1,8 +1,7 @@
 import { fal } from "@/lib/ai";
-import { verifyToken, normalizeIp } from "@/lib/auth";
+import { normalizeIp } from "@/lib/auth";
 import { dailyRateLimiter, burstRateLimiter } from "@/lib/redis";
 import dedent from "dedent";
-import { cookies } from "next/headers";
 import { z } from "zod";
 
 const InputSchema = z.object({
@@ -68,17 +67,7 @@ export async function POST(req: Request) {
     }
   }
 
-  // Bot Check Logic
-  if (process.env.NODE_ENV === "production") {
-    const cookieStore = await cookies();
-    const humanToken = cookieStore.get("human_token")?.value;
-    if (!(await verifyToken(humanToken))) {
-      return Response.json(
-        { error: "Bot check failed or expired. Please refresh the page." },
-        { status: 403 }
-      );
-    }
-  }
+  // Bot check removed per request
 
   let body;
   try {
