@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     // Generate our signed session cookie
     const sessionToken = await generateToken(ip);
 
-    const res = NextResponse.json({ success: true });
+    const res = NextResponse.json({ success: true, token: sessionToken });
     res.cookies.set("human_token", sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

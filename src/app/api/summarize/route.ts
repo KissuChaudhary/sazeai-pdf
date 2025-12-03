@@ -73,7 +73,10 @@ export async function POST(req: Request) {
     .map((s) => s.trim())
     .find((s) => s.startsWith("human_token="));
   const humanToken = humanCookie?.split("=")[1];
-  const isHuman = await verifyToken(humanToken);
+  const headerToken = req.headers.get("x-human-token") || undefined;
+  const isHumanCookie = await verifyToken(humanToken);
+  const isHumanHeader = await verifyToken(headerToken);
+  const isHuman = isHumanCookie || isHumanHeader;
   if (!isHuman) {
     return Response.json(
       { error: "Bot check required. Please complete verification." },

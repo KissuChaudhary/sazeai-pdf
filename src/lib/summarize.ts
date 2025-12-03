@@ -67,12 +67,16 @@ export async function summarizeStream(chunks: Chunk[], language: string) {
   let reading = true;
   const stream = new ReadableStream({
     async start(controller) {
+      const humanToken = typeof window !== "undefined"
+        ? localStorage.getItem("human_token") || ""
+        : "";
       const promises = chunks.map(async (chunk) => {
         const text = chunk.text;
         const response = await fetch("/api/summarize", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            ...(humanToken ? { "x-human-token": humanToken } : {}),
           },
           credentials: "include",
           body: JSON.stringify({ text, language }),
@@ -111,10 +115,14 @@ export async function generateQuickSummary(chunks: Chunk[], language: string) {
     .filter((s): s is string => typeof s === "string" && s.length > 0)
     .join("\n\n");
 
+  const humanToken = typeof window !== "undefined"
+    ? localStorage.getItem("human_token") || ""
+    : "";
   const response = await fetch("/api/summarize", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...(humanToken ? { "x-human-token": humanToken } : {}),
     },
     credentials: "include",
     body: JSON.stringify({ text: allSummaries, language }),

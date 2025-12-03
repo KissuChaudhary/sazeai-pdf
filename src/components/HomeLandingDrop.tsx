@@ -132,6 +132,11 @@ export const HomeLandingDrop = ({
                       const data = await res.json();
                       if (data.success) {
                         setVerified(true);
+                        if (data.token) {
+                          try {
+                            localStorage.setItem("human_token", data.token);
+                          } catch {}
+                        }
                       } else {
                         setVerified(false);
                         toast({
@@ -149,8 +154,18 @@ export const HomeLandingDrop = ({
                       });
                     }
                   }}
-                  onExpire={() => setVerified(false)}
-                  onError={() => setVerified(false)}
+                  onExpire={() => {
+                    setVerified(false);
+                    try {
+                      localStorage.removeItem("human_token");
+                    } catch {}
+                  }}
+                  onError={() => {
+                    setVerified(false);
+                    try {
+                      localStorage.removeItem("human_token");
+                    } catch {}
+                  }}
                 />
               </div>
             )}
