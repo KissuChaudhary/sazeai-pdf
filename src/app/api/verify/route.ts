@@ -1,5 +1,5 @@
 import { generateToken, normalizeIp } from "@/lib/auth";
-import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   let token;
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     // Generate our signed session cookie
     const sessionToken = await generateToken(ip);
 
-    // Set cookie
+    // Compute cookie domain (apex)
     const host = req.headers.get("host")?.split(":")[0] || undefined;
     let domain: string | undefined = undefined;
     if (host && host !== "localhost" && host.indexOf(".") !== -1) {
@@ -53,16 +53,17 @@ export async function POST(req: Request) {
       domain = `.${parts.slice(-2).join(".")}`;
     }
 
-    (await cookies()).set("human_token", sessionToken, {
+    const res = NextResponse.json({ success: true });
+    res.cookies.set("human_token", sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
       maxAge: 3600, // 1 hour
       path: "/",
       domain,
     });
 
-    return Response.json({ success: true });
+    return res;
   }
 
   return Response.json({ success: false, message: "Verification failed" }, { status: 400 });

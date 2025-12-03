@@ -31,7 +31,7 @@ export async function generateToken(ip: string): Promise<string> {
   return `${payload}.${signature}`;
 }
 
-export async function verifyToken(token: string | undefined, ip: string): Promise<boolean> {
+export async function verifyToken(token: string | undefined): Promise<boolean> {
   if (!token) return false;
 
   const [payload, signature] = token.split(".");
@@ -40,8 +40,7 @@ export async function verifyToken(token: string | undefined, ip: string): Promis
   const [tokenIp, timestampStr] = payload.split(":");
   if (!tokenIp || !timestampStr) return false;
 
-  // Verify IP matches
-  if (normalizeIp(tokenIp) !== normalizeIp(ip)) return false;
+  // Skip strict IP matching to reduce false negatives behind proxies/CDNs
 
   // Verify timestamp (valid for 1 hour)
   const timestamp = parseInt(timestampStr, 10);

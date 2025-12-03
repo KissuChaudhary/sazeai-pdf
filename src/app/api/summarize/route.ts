@@ -72,7 +72,7 @@ export async function POST(req: Request) {
   if (process.env.NODE_ENV === "production") {
     const cookieStore = await cookies();
     const humanToken = cookieStore.get("human_token")?.value;
-    if (!(await verifyToken(humanToken, ip))) {
+    if (!(await verifyToken(humanToken))) {
       return Response.json(
         { error: "Bot check failed or expired. Please refresh the page." },
         { status: 403 }
