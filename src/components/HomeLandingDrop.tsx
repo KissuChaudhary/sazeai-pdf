@@ -15,6 +15,7 @@ import HomepageImage1 from "./images/homepage-image-1";
 import HomepageImage2 from "./images/homepage-image-2";
 import { StatusApp } from "@/app/page";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export const HomeLandingDrop = ({
   status,
@@ -28,6 +29,7 @@ export const HomeLandingDrop = ({
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }) => {
   const { toast } = useToast();
+  const [captchaToken, setCaptchaToken] = useState<string | undefined>();
   return (
     <div className="mx-auto max-w-lg">
       <h1 className="text-center text-4xl font-bold md:text-5xl max-w-4xl px-4">
@@ -116,8 +118,11 @@ export const HomeLandingDrop = ({
             <div className="mt-6 flex justify-center">
               <Turnstile
                 siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+                onSuccess={(token) => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken(undefined)}
               />
             </div>
+            <input type="hidden" name="cf-turnstile-response" value={captchaToken || ""} />
             <div className="mt-6">
               <ins
                 className="adsbygoogle"

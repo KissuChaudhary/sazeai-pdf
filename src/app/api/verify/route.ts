@@ -66,5 +66,6 @@ export async function POST(req: Request) {
     return res;
   }
 
+  console.error("Turnstile verification failed", outcome);
   return Response.json({ success: false, message: "Verification failed" }, { status: 400 });
 }
