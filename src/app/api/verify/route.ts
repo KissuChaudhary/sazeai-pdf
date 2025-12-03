@@ -1,4 +1,4 @@
-import { generateToken } from "@/lib/auth";
+import { generateToken, normalizeIp } from "@/lib/auth";
 import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
@@ -10,7 +10,10 @@ export async function POST(req: Request) {
     return Response.json({ success: false, message: "Invalid request" }, { status: 400 });
   }
 
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1";
+  const cfIp = req.headers.get("cf-connecting-ip")?.trim();
+  const xf = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const realIp = req.headers.get("x-real-ip")?.trim();
+  const ip = normalizeIp(cfIp || xf || realIp || "127.0.0.1");
 
   if (!token) {
     return Response.json({ success: false, message: "Token missing" }, { status: 400 });
@@ -43,12 +46,20 @@ export async function POST(req: Request) {
     const sessionToken = await generateToken(ip);
 
     // Set cookie
+    const host = req.headers.get("host")?.split(":")[0] || undefined;
+    let domain: string | undefined = undefined;
+    if (host && host !== "localhost" && host.indexOf(".") !== -1) {
+      const parts = host.split(".");
+      domain = `.${parts.slice(-2).join(".")}`;
+    }
+
     (await cookies()).set("human_token", sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 3600, // 1 hour
       path: "/",
+      domain,
     });
 
     return Response.json({ success: true });

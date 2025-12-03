@@ -105,15 +105,9 @@ export default function RootLayout({
         <Toaster />
         <footer className="mx-auto mt-14 flex w-full max-w-7xl items-center justify-between px-4 py-6 md:mt-0">
           <p className="text-xs text-gray-300 md:text-sm">
-            Powered by { } 
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-400 underline transition hover:text-gray-900"
-              href="https://founderswall.com"
-            >
+          
               @ 2025 Saze AI | All rights reserved.
-            </a>
+         
           </p>
 
           <div className="flex items-center gap-2 md:gap-3">

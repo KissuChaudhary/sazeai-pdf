@@ -14,10 +14,11 @@ export async function POST(req: Request) {
   // Robust IP detection
   const forwardedFor = req.headers.get("x-forwarded-for");
   const realIp = req.headers.get("x-real-ip");
+  const cfIp = req.headers.get("cf-connecting-ip");
 
   // 1. Try x-forwarded-for (standard for proxies/load balancers)
   // It can be a comma-separated list: "client, proxy1, proxy2" -> take the first one
-  let ip = forwardedFor?.split(",")[0]?.trim();
+  let ip = cfIp?.trim() || forwardedFor?.split(",")[0]?.trim();
 
   // 2. Fallback to x-real-ip (sometimes used by Nginx/proxies)
   if (!ip && realIp) {
