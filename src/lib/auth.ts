@@ -32,19 +32,31 @@ export async function generateToken(ip: string): Promise<string> {
 }
 
 export async function verifyToken(token: string | undefined): Promise<boolean> {
-  if (!token) return false;
+  if (!token) {
+    console.log("verifyToken: no token provided");
+    return false;
+  }
 
   const [payload, signature] = token.split(".");
-  if (!payload || !signature) return false;
+  if (!payload || !signature) {
+    console.log("verifyToken: invalid token format", { token });
+    return false;
+  }
 
   const [tokenIp, timestampStr] = payload.split(":");
-  if (!tokenIp || !timestampStr) return false;
+  if (!tokenIp || !timestampStr) {
+    console.log("verifyToken: invalid payload format", { payload });
+    return false;
+  }
 
   // Skip strict IP matching to reduce false negatives behind proxies/CDNs
 
   // Verify timestamp (valid for 1 hour)
   const timestamp = parseInt(timestampStr, 10);
-  if (Date.now() - timestamp > 3600 * 1000) return false;
+  if (Date.now() - timestamp > 3600 * 1000) {
+    console.log("verifyToken: token expired", { timestamp, now: Date.now(), diff: Date.now() - timestamp });
+    return false;
+  }
 
   // Verify signature
   const encoder = new TextEncoder();

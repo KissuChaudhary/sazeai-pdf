@@ -93,6 +93,18 @@ export async function POST(req: Request) {
     .find((s) => s.startsWith("human_token="));
   const humanToken = humanCookie?.split("=")[1];
   const headerToken = req.headers.get("x-human-token") || undefined;
+  
+  // Debug logging
+  console.log("Token verification debug:", {
+    hasCookieToken: !!humanToken,
+    hasHeaderToken: !!headerToken,
+    hasBodyToken: !!bodyToken,
+    cookieTokenLength: humanToken?.length,
+    headerTokenLength: headerToken?.length,
+    bodyTokenLength: bodyToken?.length,
+    cookieHeader: cookieHeader.substring(0, 100) + (cookieHeader.length > 100 ? "..." : ""),
+  });
+  
   const isHumanCookie = await verifyToken(humanToken);
   const isHumanHeader = await verifyToken(headerToken);
   const isHumanBody = await verifyToken(bodyToken);
