@@ -43,7 +43,15 @@ export async function verifyToken(token: string | undefined): Promise<boolean> {
 
   console.log("verifyToken: full token", { token, length: token.length });
 
-  const [payload, signature] = token.split(".");
+  const lastDotIndex = token.lastIndexOf(".");
+  if (lastDotIndex === -1) {
+    console.log("verifyToken: invalid token format (no dot)", { token });
+    return false;
+  }
+
+  const payload = token.substring(0, lastDotIndex);
+  const signature = token.substring(lastDotIndex + 1);
+
   if (!payload || !signature) {
     console.log("verifyToken: invalid token format", { token, payload, signature });
     return false;
