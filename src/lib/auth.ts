@@ -51,9 +51,19 @@ export async function verifyToken(token: string | undefined): Promise<boolean> {
 
   console.log("verifyToken: split result", { payload, signature });
 
-  const [tokenIp, timestampStr] = payload.split(":");
+  // Handle URL encoding in payload (some tokens have %3A instead of :)
+  let decodedPayload = payload;
+  try {
+    decodedPayload = decodeURIComponent(payload);
+  } catch (e) {
+    // If decoding fails, use original payload
+    decodedPayload = payload;
+  }
+  console.log("verifyToken: decoded payload", { decodedPayload });
+
+  const [tokenIp, timestampStr] = decodedPayload.split(":");
   if (!tokenIp || !timestampStr) {
-    console.log("verifyToken: invalid payload format", { payload, tokenIp, timestampStr });
+    console.log("verifyToken: invalid payload format", { decodedPayload, tokenIp, timestampStr });
     return false;
   }
 
