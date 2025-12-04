@@ -11,7 +11,11 @@ function normalizeIp(ip: string): string {
 
 export async function generateToken(ip: string): Promise<string> {
   const timestamp = Date.now();
-  const payload = `${normalizeIp(ip)}:${timestamp}`;
+  const normalizedIp = normalizeIp(ip);
+  const payload = `${normalizedIp}:${timestamp}`;
+  
+  console.log("generateToken debug:", { originalIp: ip, normalizedIp, timestamp, payload });
+  
   const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey(
     "raw",
@@ -37,15 +41,19 @@ export async function verifyToken(token: string | undefined): Promise<boolean> {
     return false;
   }
 
+  console.log("verifyToken: full token", { token, length: token.length });
+
   const [payload, signature] = token.split(".");
   if (!payload || !signature) {
-    console.log("verifyToken: invalid token format", { token });
+    console.log("verifyToken: invalid token format", { token, payload, signature });
     return false;
   }
 
+  console.log("verifyToken: split result", { payload, signature });
+
   const [tokenIp, timestampStr] = payload.split(":");
   if (!tokenIp || !timestampStr) {
-    console.log("verifyToken: invalid payload format", { payload });
+    console.log("verifyToken: invalid payload format", { payload, tokenIp, timestampStr });
     return false;
   }
 

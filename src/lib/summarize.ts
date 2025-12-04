@@ -70,6 +70,13 @@ export async function summarizeStream(chunks: Chunk[], language: string) {
       const humanToken = typeof window !== "undefined"
         ? localStorage.getItem("human_token") || ""
         : "";
+      
+      // Debug: Log token info
+      console.log("summarizeStream token debug:", {
+        hasToken: !!humanToken,
+        tokenLength: humanToken?.length,
+        tokenPreview: humanToken?.substring(0, 20) + "...",
+      });
       const promises = chunks.map(async (chunk) => {
         const text = chunk.text;
         const response = await fetch("/api/summarize", {
@@ -118,6 +125,13 @@ export async function generateQuickSummary(chunks: Chunk[], language: string) {
   const humanToken = typeof window !== "undefined"
     ? localStorage.getItem("human_token") || ""
     : "";
+    
+  // Debug: Log token info
+  console.log("generateQuickSummary token debug:", {
+    hasToken: !!humanToken,
+    tokenLength: humanToken?.length,
+    tokenPreview: humanToken?.substring(0, 20) + "...",
+  });
   const response = await fetch("/api/summarize", {
     method: "POST",
     headers: {
