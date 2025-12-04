@@ -79,7 +79,7 @@ export async function summarizeStream(chunks: Chunk[], language: string) {
             ...(humanToken ? { "x-human-token": humanToken } : {}),
           },
           credentials: "include",
-          body: JSON.stringify({ text, language }),
+          body: JSON.stringify({ text, language, human_token: humanToken || undefined }),
         });
         let data;
         try {
@@ -125,7 +125,7 @@ export async function generateQuickSummary(chunks: Chunk[], language: string) {
       ...(humanToken ? { "x-human-token": humanToken } : {}),
     },
     credentials: "include",
-    body: JSON.stringify({ text: allSummaries, language }),
+    body: JSON.stringify({ text: allSummaries, language, human_token: humanToken || undefined }),
   });
 
   if (!response.ok) {

@@ -5,8 +5,9 @@ import dedent from "dedent";
 import { z } from "zod";
 
 const InputSchema = z.object({
-  text: z.string().min(1).max(100000), // Max 100k characters
+  text: z.string().min(1).max(100000),
   language: z.string().min(1).max(50),
+  human_token: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -67,23 +68,6 @@ export async function POST(req: Request) {
     }
   }
 
-  const cookieHeader = req.headers.get("cookie") || "";
-  const humanCookie = cookieHeader
-    .split(";")
-    .map((s) => s.trim())
-    .find((s) => s.startsWith("human_token="));
-  const humanToken = humanCookie?.split("=")[1];
-  const headerToken = req.headers.get("x-human-token") || undefined;
-  const isHumanCookie = await verifyToken(humanToken);
-  const isHumanHeader = await verifyToken(headerToken);
-  const isHuman = isHumanCookie || isHumanHeader;
-  if (!isHuman) {
-    return Response.json(
-      { error: "Bot check required. Please complete verification." },
-      { status: 403 }
-    );
-  }
-
   let body;
   try {
     body = await req.json();
@@ -100,7 +84,25 @@ export async function POST(req: Request) {
     );
   }
 
-  const { text, language } = parseResult.data;
+  const { text, language, human_token: bodyToken } = parseResult.data;
+
+  const cookieHeader = req.headers.get("cookie") || "";
+  const humanCookie = cookieHeader
+    .split(";")
+    .map((s) => s.trim())
+    .find((s) => s.startsWith("human_token="));
+  const humanToken = humanCookie?.split("=")[1];
+  const headerToken = req.headers.get("x-human-token") || undefined;
+  const isHumanCookie = await verifyToken(humanToken);
+  const isHumanHeader = await verifyToken(headerToken);
+  const isHumanBody = await verifyToken(bodyToken);
+  const isHuman = isHumanCookie || isHumanHeader || isHumanBody;
+  if (!isHuman) {
+    return Response.json(
+      { error: "Bot check required. Please complete verification." },
+      { status: 403 }
+    );
+  }
 
   const systemPrompt = dedent`
     You are an expert at summarizing text.
