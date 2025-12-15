@@ -23,7 +23,7 @@
     "dedent": "^1.5.3",
     "lucide-react": "^0.503.0",
     "nanoid": "^5.1.5",
-    "next": "16.0.7",
+    "next": "16.0.10",
     "next-plausible": "^3.12.4",
     "pdfjs-dist": "^4.8.69",
     "react": "19.1.0",
